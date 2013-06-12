@@ -6,7 +6,8 @@ from django.views.decorators.http import require_GET
 from paypal.standard.pdt.models import PayPalPDT
 from paypal.standard.pdt.forms import PayPalPDTForm
  
- 
+from salesmaster.models import Order
+
 @require_GET
 def pdt(request, item_check_callable=None, template="pdt/pdt.html", context=None):
     """Payment data transfer implementation: http://tinyurl.com/c9jjmw"""
@@ -14,6 +15,8 @@ def pdt(request, item_check_callable=None, template="pdt/pdt.html", context=None
     pdt_obj = None
     txn_id = request.GET.get('tx')
     failed = False
+    order = Order.objects.fromSession(request)
+    
     if txn_id is not None:
         # If an existing transaction with the id tx exists: use it
         try:
@@ -43,6 +46,7 @@ def pdt(request, item_check_callable=None, template="pdt/pdt.html", context=None
             if not failed:
                 # The PDT object gets saved during verify
                 pdt_obj.verify(item_check_callable)
+                order.detatch(request)
     else:
         pass # we ignore any PDT requests that don't have a transaction id
  
