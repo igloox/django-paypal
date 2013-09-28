@@ -46,7 +46,7 @@ def pdt(request, item_check_callable=None, template="pdt/pdt.html", context=None
             if not failed:
                 # The PDT object gets saved during verify
                 pdt_obj.verify(item_check_callable)
-                order.detatch(request)
+                order.detach(request)
     else:
         pass # we ignore any PDT requests that don't have a transaction id
  
